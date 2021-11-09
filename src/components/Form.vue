@@ -63,6 +63,19 @@
           autofocus
         />
       </div>
+      <div>
+        <h3>Пол: {{ formData.isMan ? "Мужской" : "" }}</h3>
+        <input type="radio" id="isMan" value="true" v-model="formData.isMan" />
+        <label for="one">Мужской</label>
+
+        <input
+          type="radio"
+          id="isWoman"
+          value="false"
+          v-model="formData.isMan"
+        />
+        <label for="two">Женский</label>
+      </div>
     </div>
   </div>
 </template>
@@ -97,7 +110,11 @@ export default {
       },
     };
   },
-  methods: {},
+  computed: {
+    isManLabel: function () {
+      return this.formData.isMan ? "Мужской" : "";
+    },
+  },
 };
 </script>
 
