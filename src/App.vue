@@ -6,7 +6,6 @@
 
 <script>
 import Form from "./components/Form.vue";
-
 export default {
   name: "App",
   components: {
@@ -23,13 +22,11 @@ export default {
   padding: 24px;
   box-sizing: border-box;
 }
-
 html,
 body,
 #app {
   height: 100%;
 }
-
 * {
   box-sizing: border-box;
 }
