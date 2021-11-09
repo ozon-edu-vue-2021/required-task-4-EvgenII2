@@ -24,7 +24,6 @@
 // import clickInside from "@/utils/directives/clickInside";
 // import BaseInputMixin from "@/components/Input/BaseInputMixin";
 import IconClear from "../Icons/IconClear.vue";
-import clickInside from "../../utils/directives/clickInside";
 import BaseInputMixin from "../Input/BaseInputMixin";
 
 export default {
@@ -32,10 +31,7 @@ export default {
   mixins: [BaseInputMixin],
   components: {
     IconClear,
-  },
-  directives: {
-    clickInside,
-  },
+  },  
   data() {
     return {
       focused: this.isActive,

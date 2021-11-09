@@ -41,17 +41,12 @@
         />
       </div>-->
       <div>
-        <h2>Nationality</h2>
-        <select v-model="nationality">
-          <option
-            v-for="(country, id) in countries"
-            :key="id"
-            v-bind:value="country.nationality"
-          >
-            {{ country.nationality }}
-          </option>
-        </select>
-        <!-- <select :options="countries" label="nationality"></select> -->
+        <h3>Nationality: {{ nationality }}</h3>
+        <Select
+          v-model="nationality"
+          :items="countries"
+          @selected="updateSelectedItems"
+        />
       </div>
     </div>
   </div>
@@ -60,14 +55,13 @@
 <script>
 import BaseInput from "./Input/BaseInput.vue";
 // import NumberInput from "./Input/NumberInput.vue";
-// import MultiSelect from "./MultiSelect/MultiSelect.vue";
+import Select from "./Select/Select.vue";
 import countries from "../assets/data/citizenships.json";
-console.log(countries);
 export default {
   components: {
     BaseInput,
     // NumberInput,
-    // MultiSelect,
+    Select,
   },
   data() {
     return {
@@ -98,12 +92,7 @@ export default {
   },
   methods: {
     updateSelectedItems(item) {
-      const foundIndex = this.selectedItems.findIndex(
-        (selected) => selected.id === item.id
-      );
-      foundIndex > -1
-        ? this.removeFromSelected(item)
-        : this.addToSelected(item);
+      this.nationality = item;
     },
   },
 };
@@ -136,5 +125,19 @@ export default {
 
 .component-chip-item:not(:last-child) {
   margin-right: 8px;
+}
+
+.select-list-item {
+  display: flex;
+  padding: 8px;
+}
+
+.select-list-item:hover {
+  cursor: pointer;
+  background-color: #f5f7fa;
+}
+
+.select-list-item_selected {
+  color: #216bff;
 }
 </style>
