@@ -13,6 +13,7 @@
           v-model="formData.lastname"
           placeholder="Введите фамилию"
           autofocus
+          required
           @blur="checkLastname"
         />
         <p v-if="isShowLastnameError">Заполните поле кириллицей</p>
@@ -26,7 +27,10 @@
           v-model="formData.firstname"
           placeholder="Введите имя"
           autofocus
+          required
+          @blur="checkFirstname"
         />
+        <p v-if="isShowFirstnameError">Заполните поле кириллицей</p>
       </div>
       <div>
         <label for="patronymic" class="form-label">Отчество</label>
@@ -37,7 +41,10 @@
           v-model="formData.patronymic"
           placeholder="Введите отчество"
           autofocus
+          required
+          @blur="checkPatronymic"
         />
+        <p v-if="isShowPatronymicError">Заполните поле кириллицей</p>
       </div>
       <div>
         <label for="birthday" class="form-label">Дата рождения</label>
@@ -60,7 +67,9 @@
           v-model="formData.email"
           placeholder="Введите e-mail"
           autofocus
+          @blur="checkEmail"
         />
+        <p v-if="isShowEmailError">Введите корректный e-mail</p>
       </div>
       <div class="country-selector" v-click-outside="hideDropdown">
         <label for="countries"> Гражданство </label>
@@ -128,7 +137,9 @@
           v-model="formData.oldLastname"
           placeholder="Введите фамилию"
           autofocus
+          @blur="checkOldLastname"
         />
+        <p v-if="isShowOldLastnameError">Заполните поле кириллицей</p>
       </div>
       <div v-if="formData.hasChangedFirstnameOrLastname === 'true'">
         <label for="oldFirstname" class="form-label">Имя</label>
@@ -139,7 +150,9 @@
           v-model="formData.oldFirstname"
           placeholder="Введите имя"
           autofocus
+          @blur="checkOldFirstname"
         />
+        <p v-if="isShowOldFirstnameError">Заполните поле кириллицей</p>
       </div>
     </div>
 
@@ -203,7 +216,9 @@
               v-model="formData.foreignLastname"
               placeholder="Введите фамилию на латинице"
               autofocus
+              @blur="checkForeignLastname"
             />
+            <p v-if="isShowForeignLastnameError">Заполните поле латиницей</p>
           </div>
           <div>
             <label for="foreignFirstname" class="form-label">
@@ -216,7 +231,9 @@
               v-model="formData.foreignFirstname"
               placeholder="Введите имя на латинице"
               autofocus
+              @blur="checkForeignFirstname"
             />
+            <p v-if="isShowForeignFirstnameError">Заполните поле латиницей</p>
           </div>
           <div>
             <label for="foreignPasportNumber" class="form-label">
@@ -231,7 +248,7 @@
               autofocus
             />
           </div>
-          <div class="country-selector" v-click-outside="hideDropdown">
+          <div class="country-selector" v-click-outside="hideDropdownForeign">
             <label for="foreignPasportCountry"> Страна выдачи </label>
             <input
               id="foreignPasportCountry"
@@ -261,7 +278,7 @@
             </div>
           </div>
           <div>
-            <div class="country-selector" v-click-outside="hideDropdown">
+            <div class="country-selector" v-click-outside="hideDropdownPasport">
               <label for="foreignPasportType"> Тип паспорта </label>
               <input
                 id="foreignPasportType"
@@ -312,7 +329,7 @@ import countries from "../assets/data/citizenships.json";
 import pasports from "../assets/data/passport-types.json";
 import ClickOutside from "vue-click-outside";
 import { debounce } from "../helpers/debounce";
-import { regexCyrillic } from "../helpers/regex";
+import { regexCyrillic, regexEmail, regexLatin } from "../helpers/regex";
 
 export default {
   directives: {
@@ -361,6 +378,51 @@ export default {
 
       isLastnameChecked: false,
       isShowLastnameError: false,
+
+      isFirstnameChecked: false,
+      isShowFirstnameError: false,
+
+      isPatronymicChecked: false,
+      isShowPatronymicError: false,
+
+      isBirthdayChecked: false,
+      isShowBirthdayError: false,
+
+      isEmailChecked: false,
+      isShowEmailError: false,
+
+      isNationalityChecked: false,
+      isShowNationalityError: false,
+
+      isRusPasportSeriesChecked: false,
+      isShowRusPasportSeriesError: false,
+
+      isRusPasportNumberChecked: false,
+      isShowRusPasportNumberError: false,
+
+      isRusPasportDateChecked: false,
+      isShowRusPasportDateError: false,
+
+      isOldFirstnameChecked: false,
+      isShowOldFirstnameError: false,
+
+      isRusOldLastnameChecked: false,
+      isShowOldLastnameError: false,
+
+      isForeignFirstnameChecked: false,
+      isShowForeignFirstnameError: false,
+
+      isForeignLastnameChecked: false,
+      isShowForeignLastnameError: false,
+
+      isForeignPasportTypeChecked: false,
+      isShowForeignPasportTypeError: false,
+
+      isForeignPasportNumberChecked: false,
+      isShowForeignPasportNumberError: false,
+
+      isForeignPasportCountryChecked: false,
+      isShowForeignPasportCountryError: false,
     };
   },
   computed: {
@@ -416,10 +478,25 @@ export default {
       this.isDropdownNationalityOpen = false;
     },
     hideDropdownForeign() {
-      this.isDropdownCountriesOpenOpen = false;
+      this.isDropdownCountriesOpen = false;
+    },
+    hideDropdownPasport() {
+      this.isDropdownPasportTypeOpen = false;
     },
     formSubmit() {
-      console.log(this.formData);
+      if (this.checkForm) console.log(this.formData);
+    },
+    checkForm() {
+      return (
+        this.isEmailChecked &&
+        this.isFirstnameChecked &&
+        this.isLastnameChecked &&
+        this.isPatronymicChecked &&
+        this.isOldFirstnameChecked &&
+        this.isOldLastnameChecked &&
+        this.isForeignFirstnameChecked &&
+        this.isForeignLastnameChecked
+      );
     },
     checkLastname() {
       if (
@@ -431,6 +508,90 @@ export default {
       } else {
         this.isLastnameChecked = false;
         this.isShowLastnameError = true;
+      }
+    },
+    checkFirstname() {
+      if (
+        this.formData.firstname.length > 0 &&
+        this.formData.firstname.match(regexCyrillic)
+      ) {
+        this.isFirstnameChecked = true;
+        this.isShowFirstnameError = false;
+      } else {
+        this.isFirstnameChecked = false;
+        this.isShowFirstnameError = true;
+      }
+    },
+    checkPatronymic() {
+      if (
+        this.formData.lastname.length > 0 &&
+        this.formData.lastname.match(regexCyrillic)
+      ) {
+        this.isPatronymicChecked = true;
+        this.isShowPatronymicError = false;
+      } else {
+        this.isPatronymicChecked = false;
+        this.isShowPatronymicError = true;
+      }
+    },
+    checkOldLastname() {
+      if (
+        this.formData.oldLastname.length > 0 &&
+        this.formData.oldLastname.match(regexCyrillic)
+      ) {
+        this.isOldLastnameChecked = true;
+        this.isShowOldLastnameError = false;
+      } else {
+        this.isOldLastnameChecked = false;
+        this.isShowOldLastnameError = true;
+      }
+    },
+    checkOldFirstname() {
+      if (
+        this.formData.oldFirstname.length > 0 &&
+        this.formData.oldFirstname.match(regexCyrillic)
+      ) {
+        this.isOldFirstnameChecked = true;
+        this.isShowOldFirstnameError = false;
+      } else {
+        this.isOldFirstnameChecked = false;
+        this.isShowOldFirstnameError = true;
+      }
+    },
+    checkForeignFirstname() {
+      if (
+        this.formData.foreignFirstname.length > 0 &&
+        this.formData.foreignFirstname.match(regexLatin)
+      ) {
+        this.isForeignFirstnameChecked = true;
+        this.isShowForeignFirstnameError = false;
+      } else {
+        this.isForeignFirstnameChecked = false;
+        this.isShowForeignFirstnameError = true;
+      }
+    },
+    checkForeignLastname() {
+      if (
+        this.formData.foreignLastname.length > 0 &&
+        this.formData.foreignLastname.match(regexLatin)
+      ) {
+        this.isForeignLastnameChecked = true;
+        this.isShowForeignLastnameError = false;
+      } else {
+        this.isForeignLastnameChecked = false;
+        this.isShowForeignLastnameError = true;
+      }
+    },
+    checkEmail() {
+      if (
+        this.formData.email.length > 0 &&
+        this.formData.email.match(regexEmail)
+      ) {
+        this.isEmailChecked = true;
+        this.isShowEmailError = false;
+      } else {
+        this.isEmailChecked = false;
+        this.isShowEmailError = true;
       }
     },
   },
