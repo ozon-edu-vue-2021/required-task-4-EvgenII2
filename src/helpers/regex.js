@@ -1,0 +1,1 @@
+export const regexCyrillic = '^[а-яА-ЯёЁ0-9]+$';
