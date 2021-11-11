@@ -16,7 +16,9 @@
           required
           @blur="checkLastname"
         />
-        <p v-if="isShowLastnameError">Заполните поле кириллицей</p>
+        <p v-if="isShowLastnameError" class="input-error">
+          Заполните поле кириллицей
+        </p>
       </div>
       <div>
         <label for="firstname" class="form-label"> Имя </label>
@@ -30,7 +32,9 @@
           required
           @blur="checkFirstname"
         />
-        <p v-if="isShowFirstnameError">Заполните поле кириллицей</p>
+        <p v-if="isShowFirstnameError" class="input-error">
+          Заполните поле кириллицей
+        </p>
       </div>
       <div>
         <label for="patronymic" class="form-label">Отчество</label>
@@ -44,7 +48,9 @@
           required
           @blur="checkPatronymic"
         />
-        <p v-if="isShowPatronymicError">Заполните поле кириллицей</p>
+        <p v-if="isShowPatronymicError" class="input-error">
+          Заполните поле кириллицей
+        </p>
       </div>
       <div>
         <label for="birthday" class="form-label">Дата рождения</label>
@@ -53,10 +59,14 @@
           class="form-input"
           type="date"
           v-model="formData.birthday"
-          v-bind:max="getToday"
           placeholder="Введите дату"
+          required
           autofocus
+          @blur="checkBirthday"
         />
+        <p v-if="isShowBirthdayError" class="input-error">
+          Дата должна быть ранее сегодняшней
+        </p>
       </div>
       <div>
         <label for="email" class="form-label">E-mail</label>
@@ -66,10 +76,13 @@
           type="email"
           v-model="formData.email"
           placeholder="Введите e-mail"
+          required
           autofocus
           @blur="checkEmail"
         />
-        <p v-if="isShowEmailError">Введите корректный e-mail</p>
+        <p v-if="isShowEmailError" class="input-error">
+          Введите корректный e-mail
+        </p>
       </div>
       <div class="country-selector" v-click-outside="hideDropdown">
         <label for="countries"> Гражданство </label>
@@ -155,7 +168,6 @@
         <p v-if="isShowOldFirstnameError">Заполните поле кириллицей</p>
       </div>
     </div>
-
     <div v-if="formData.nationality === 'Russia'">
       <h2>Паспорта данные</h2>
       <div class="section-pasport-data">
@@ -170,7 +182,11 @@
             v-model="formData.rusPasportSeries"
             placeholder="Введите серию паспорта"
             autofocus
+            @blur="checkRusPasportSeries"
           />
+          <p v-if="isShowRusPasportSeriesError" class="input-error">
+            Введите 4 цифры
+          </p>
         </div>
         <div>
           <label for="rusPasportNumber" class="form-label">
@@ -183,8 +199,13 @@
             v-model="formData.rusPasportNumber"
             placeholder="Введите номер паспорта"
             autofocus
+            @blur="checkRusPasportNumber"
           />
+          <p v-if="isShowRusPasportNumberError" class="input-error">
+            Введите 6 цифр
+          </p>
         </div>
+
         <div>
           <label for="rusPasportDate" class="form-label">
             Дата выдачи паспорта
@@ -197,7 +218,11 @@
             placeholder="Введите дату выдачи"
             v-bind:max="getToday"
             autofocus
+            @blur="checkRusPasportDate"
           />
+          <p v-if="isShowRusPasportDateError" class="input-error">
+            Дата должна быть ранее сегодняшней
+          </p>
         </div>
       </div>
     </div>
@@ -218,7 +243,9 @@
               autofocus
               @blur="checkForeignLastname"
             />
-            <p v-if="isShowForeignLastnameError">Заполните поле латиницей</p>
+            <p v-if="isShowForeignLastnameError" class="input-error">
+              Заполните поле латиницей
+            </p>
           </div>
           <div>
             <label for="foreignFirstname" class="form-label">
@@ -233,7 +260,9 @@
               autofocus
               @blur="checkForeignFirstname"
             />
-            <p v-if="isShowForeignFirstnameError">Заполните поле латиницей</p>
+            <p v-if="isShowForeignFirstnameError" class="input-error">
+              Заполните поле латиницей
+            </p>
           </div>
           <div>
             <label for="foreignPasportNumber" class="form-label">
@@ -278,7 +307,7 @@
             </div>
           </div>
           <div>
-            <div class="country-selector" v-click-outside="hideDropdownPasport">
+            <div class="pasport-selector" v-click-outside="hideDropdownPasport">
               <label for="foreignPasportType"> Тип паспорта </label>
               <input
                 id="foreignPasportType"
@@ -288,14 +317,14 @@
               />
               <div
                 v-if="isDropdownPasportTypeOpen"
-                class="country-selector__dropdown"
+                class="pasport-selector__dropdown"
               >
                 <ul
                   v-if="pasportTypes.length"
-                  class="country-selector__dropdown-items"
+                  class="pasport-selector__dropdown-items"
                 >
                   <li
-                    class="country-selector__dropdown-item"
+                    class="pasport-selector__dropdown-item"
                     v-for="pasport in pasportTypes"
                     :key="pasport.id"
                     @click="onPasportClick(pasport.type)"
@@ -330,6 +359,9 @@ import pasports from "../assets/data/passport-types.json";
 import ClickOutside from "vue-click-outside";
 import { debounce } from "../helpers/debounce";
 import { regexCyrillic, regexEmail, regexLatin } from "../helpers/regex";
+
+const PASPORT_NUMBER = 6;
+const PASPORT_SERIES = 4;
 
 export default {
   directives: {
@@ -390,9 +422,6 @@ export default {
 
       isEmailChecked: false,
       isShowEmailError: false,
-
-      isNationalityChecked: false,
-      isShowNationalityError: false,
 
       isRusPasportSeriesChecked: false,
       isShowRusPasportSeriesError: false,
@@ -484,7 +513,7 @@ export default {
       this.isDropdownPasportTypeOpen = false;
     },
     formSubmit() {
-      if (this.checkForm) console.log(this.formData);
+      if (this.checkForm()) console.log(this.formData);
     },
     checkForm() {
       return (
@@ -492,10 +521,7 @@ export default {
         this.isFirstnameChecked &&
         this.isLastnameChecked &&
         this.isPatronymicChecked &&
-        this.isOldFirstnameChecked &&
-        this.isOldLastnameChecked &&
-        this.isForeignFirstnameChecked &&
-        this.isForeignLastnameChecked
+        this.isBirthdayChecked
       );
     },
     checkLastname() {
@@ -594,6 +620,52 @@ export default {
         this.isShowEmailError = true;
       }
     },
+    checkRusPasportSeries() {
+      if (
+        this.formData.rusPasportSeries?.length === PASPORT_SERIES &&
+        !isNaN(this.formData.rusPasportSeries)
+      ) {
+        this.isRusPasportSeriesChecked = true;
+        this.isShowRusPasportSeriesError = false;
+      } else {
+        this.isRusPasportSeriesChecked = false;
+        this.isShowRusPasportSeriesError = true;
+      }
+    },
+    checkRusPasportNumber() {
+      console.log(this.formData.rusPasportNumber);
+      if (
+        this.formData.rusPasportNumber?.length === PASPORT_NUMBER &&
+        !isNaN(this.formData.rusPasportNumber)
+      ) {
+        this.isRusPasportNumberChecked = true;
+        this.isShowRusPasportNumberError = false;
+      } else {
+        this.isRusPasportNumberChecked = false;
+        this.isShowRusPasportNumberError = true;
+      }
+    },
+    checkRusPasportDate() {
+      if (
+        this.formData.rusPasportDate &&
+        new Date(this.formData.rusPasportDate) < new Date()
+      ) {
+        this.isRusPasportDateChecked = true;
+        this.isShowRusPasportDateError = false;
+      } else {
+        this.isRusPasportDateChecked = false;
+        this.isShowRusPasportDateError = true;
+      }
+    },
+    checkBirthday() {
+      if (new Date(this.formData.birthday) < new Date()) {
+        this.isBirthdayChecked = true;
+        this.isShowBirthdayError = false;
+      } else {
+        this.isBirthdayChecked = false;
+        this.isShowBirthdayError = true;
+      }
+    },
   },
 };
 </script>
@@ -656,9 +728,26 @@ export default {
   list-style: none;
   margin-bottom: 5px;
 }
+.pasport-selector {
+  position: relative;
+}
+.pasport-selector__dropdown {
+  position: absolute;
+  background: white;
+  width: 100%;
+  text-align: left;
+}
+.pasport-selector__dropdown-item {
+  cursor: pointer;
+  list-style: none;
+  margin-bottom: 5px;
+}
 .form-label {
   padding: 0;
   margin: 0 0 20px;
   font-size: 18px;
+}
+.input-error {
+  color: red;
 }
 </style>
