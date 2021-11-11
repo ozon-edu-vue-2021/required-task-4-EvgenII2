@@ -354,6 +354,11 @@
 </template>
 
 <script>
+// TODO
+// Сделать компонент базовый инпут
+// Сделать компонент базовый селект
+// Сделать неактивной кнопку при неверной валидации
+
 import countries from "../assets/data/citizenships.json";
 import pasports from "../assets/data/passport-types.json";
 import ClickOutside from "vue-click-outside";
