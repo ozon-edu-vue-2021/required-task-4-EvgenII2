@@ -78,35 +78,27 @@
           <div v-else class="empty">Ничего не найдено</div>
         </div>
       </div>
+
       <div>
         <p class="form-label">Пол</p>
-        <input type="radio" id="isMan" value="true" v-model="formData.isMan" />
-        <label for="isMan">Мужской</label>
-        <input
-          type="radio"
-          id="isWoman"
-          value="false"
-          v-model="formData.isMan"
-        />
-        <label for="isWoman">Женский</label>
+        <RadioBox label="Мужской" value="Мужской" v-model="formData.isMan" />
+        <RadioBox label="Женский" value="Женский" v-model="formData.isMan" />
       </div>
+
       <div>
         <p class="form-label">Меняли ли фамилию или имя</p>
-        <input
-          type="radio"
-          id="changedFirstnameOrLastname"
+        <RadioBox
+          label="Yes"
           value="true"
           v-model="formData.hasChangedFirstnameOrLastname"
         />
-        <label for="changedFirstnameOrLastname">Да</label>
-        <input
-          type="radio"
-          id="notChangedFirstnameOrLastname"
+        <RadioBox
+          label="No"
           value="false"
           v-model="formData.hasChangedFirstnameOrLastname"
         />
-        <label for="notChangedFirstnameOrLastname">нет</label>
       </div>
+
       <BaseInput
         v-if="formData.hasChangedFirstnameOrLastname === 'true'"
         id="oldLastname"
@@ -277,7 +269,7 @@ import ClickOutside from "vue-click-outside";
 import { debounce } from "../helpers/debounce";
 import { regexCyrillic, regexEmail, regexLatin } from "../helpers/regex";
 import BaseInput from "./BaseInput/BaseInput.vue";
-
+import RadioBox from "./BaseRadio/RadioBox.vue";
 const PASPORT_NUMBER = 6;
 const PASPORT_SERIES = 4;
 
@@ -287,6 +279,7 @@ export default {
   },
   components: {
     BaseInput,
+    RadioBox,
   },
   created() {
     this.debouncedSearchCountry = debounce(this.getCountry, 2000);
@@ -300,7 +293,7 @@ export default {
         patronymic: "",
         birthday: "",
         email: "",
-        isMan: true,
+        isMan: "",
         nationality: "",
         rusPasportSeries: null,
         rusPasportNumber: null,
