@@ -2,88 +2,54 @@
   <form class="form" autocomplete="off" v-on:submit.prevent="formSubmit">
     <h2>Личные данные</h2>
     <div class="section-personal-data">
-      <div>
-        <label for="lastname" class="form-label">
-          Фамилия {{ formData.email }}
-        </label>
-        <input
-          id="lastname"
-          class="form-input"
-          type="text"
-          v-model="formData.lastname"
-          placeholder="Введите фамилию"
-          autofocus
-          required
-          @blur="checkLastname"
-        />
-        <p v-if="isShowLastnameError" class="input-error">
-          Заполните поле кириллицей
-        </p>
-      </div>
-      <div>
-        <label for="firstname" class="form-label"> Имя </label>
-        <input
-          id="firstname"
-          class="form-input"
-          type="text"
-          v-model="formData.firstname"
-          placeholder="Введите имя"
-          autofocus
-          required
-          @blur="checkFirstname"
-        />
-        <p v-if="isShowFirstnameError" class="input-error">
-          Заполните поле кириллицей
-        </p>
-      </div>
-      <div>
-        <label for="patronymic" class="form-label">Отчество</label>
-        <input
-          id="patronymic"
-          class="form-input"
-          type="text"
-          v-model="formData.patronymic"
-          placeholder="Введите отчество"
-          autofocus
-          required
-          @blur="checkPatronymic"
-        />
-        <p v-if="isShowPatronymicError" class="input-error">
-          Заполните поле кириллицей
-        </p>
-      </div>
-      <div>
-        <label for="birthday" class="form-label">Дата рождения</label>
-        <input
-          id="birthday"
-          class="form-input"
-          type="date"
-          v-model="formData.birthday"
-          placeholder="Введите дату"
-          required
-          autofocus
-          @blur="checkBirthday"
-        />
-        <p v-if="isShowBirthdayError" class="input-error">
-          Дата должна быть ранее сегодняшней
-        </p>
-      </div>
-      <div>
-        <label for="email" class="form-label">E-mail</label>
-        <input
-          id="email"
-          class="form-input"
-          type="email"
-          v-model="formData.email"
-          placeholder="Введите e-mail"
-          required
-          autofocus
-          @blur="checkEmail"
-        />
-        <p v-if="isShowEmailError" class="input-error">
-          Введите корректный e-mail
-        </p>
-      </div>
+      <BaseInput
+        id="lastname"
+        label="Фамилия"
+        error="Заполните поле кириллицей"
+        placeholder="Введите фамилию"
+        :isShowError="isShowLastnameError"
+        v-on:update="formData.lastname = $event"
+        v-on:blurHandler="checkLastname"
+      />
+      <BaseInput
+        id="firstname"
+        label="Имя"
+        error="Заполните поле кириллицей"
+        placeholder="Введите имя"
+        :isShowError="isShowFirstnameError"
+        v-on:update="formData.firstname = $event"
+        v-on:blurHandler="checkFirstname"
+      />
+      <BaseInput
+        id="patronymic"
+        label="Отчество"
+        error="Заполните поле кириллицей"
+        placeholder="Введите отчество"
+        :isShowError="isShowPatronymicError"
+        v-on:update="formData.patronymic = $event"
+        v-on:blurHandler="checkPatronymic"
+      />
+      <BaseInput
+        id="birthday"
+        label="Дата рождения"
+        error="Дата должна быть ранее сегодняшней"
+        type="date"
+        placeholder="Введите дату"
+        :isShowError="isShowBirthdayError"
+        v-on:update="formData.birthday = $event"
+        v-on:blurHandler="checkBirthday"
+      />
+      <BaseInput
+        id="email"
+        label="Email"
+        error="Введите корректный e-mail"
+        type="email"
+        placeholder="Введите email"
+        :isShowError="isShowEmailError"
+        v-on:update="formData.email = $event"
+        v-on:blurHandler="checkEmail"
+      />
+
       <div class="country-selector" v-click-outside="hideDropdown">
         <label for="countries"> Гражданство </label>
         <input
@@ -141,142 +107,88 @@
         />
         <label for="notChangedFirstnameOrLastname">нет</label>
       </div>
-      <div v-if="formData.hasChangedFirstnameOrLastname === 'true'">
-        <label for="oldLastname" class="form-label">Фамилия</label>
-        <input
-          id="oldLastname"
-          class="form-input"
-          type="text"
-          v-model="formData.oldLastname"
-          placeholder="Введите фамилию"
-          autofocus
-          @blur="checkOldLastname"
-        />
-        <p v-if="isShowOldLastnameError">Заполните поле кириллицей</p>
-      </div>
-      <div v-if="formData.hasChangedFirstnameOrLastname === 'true'">
-        <label for="oldFirstname" class="form-label">Имя</label>
-        <input
-          id="oldFirstname"
-          class="form-input"
-          type="text"
-          v-model="formData.oldFirstname"
-          placeholder="Введите имя"
-          autofocus
-          @blur="checkOldFirstname"
-        />
-        <p v-if="isShowOldFirstnameError">Заполните поле кириллицей</p>
-      </div>
+      <BaseInput
+        v-if="formData.hasChangedFirstnameOrLastname === 'true'"
+        id="oldLastname"
+        label="Фамилия"
+        error="Заполните поле кириллицей"
+        placeholder="Введите фамилию"
+        :isShowError="isShowOldLastnameError"
+        v-on:update="formData.oldLastname = $event"
+        v-on:blurHandler="checkOldLastname"
+      />
+      <BaseInput
+        v-if="formData.hasChangedFirstnameOrLastname === 'true'"
+        id="oldFirstname"
+        label="Имя"
+        error="Заполните поле кириллицей"
+        placeholder="Введите имя"
+        :isShowError="isShowOldFirstnameError"
+        v-on:update="formData.oldFirstname = $event"
+        v-on:blurHandler="checkOldFirstname"
+      />
     </div>
     <div v-if="formData.nationality === 'Russia'">
       <h2>Паспорта данные</h2>
       <div class="section-pasport-data">
-        <div>
-          <label for="rusPasportSeries" class="form-label">
-            Серия паспорта
-          </label>
-          <input
-            id="rusPasportSeries"
-            class="form-input"
-            type="text"
-            v-model="formData.rusPasportSeries"
-            placeholder="Введите серию паспорта"
-            autofocus
-            @blur="checkRusPasportSeries"
-          />
-          <p v-if="isShowRusPasportSeriesError" class="input-error">
-            Введите 4 цифры
-          </p>
-        </div>
-        <div>
-          <label for="rusPasportNumber" class="form-label">
-            Номер паспорта
-          </label>
-          <input
-            id="rusPasportNumber"
-            class="form-input"
-            type="text"
-            v-model="formData.rusPasportNumber"
-            placeholder="Введите номер паспорта"
-            autofocus
-            @blur="checkRusPasportNumber"
-          />
-          <p v-if="isShowRusPasportNumberError" class="input-error">
-            Введите 6 цифр
-          </p>
-        </div>
-
-        <div>
-          <label for="rusPasportDate" class="form-label">
-            Дата выдачи паспорта
-          </label>
-          <input
-            id="rusPasportDate"
-            class="form-input"
-            type="date"
-            v-model="formData.rusPasportDate"
-            placeholder="Введите дату выдачи"
-            v-bind:max="getToday"
-            autofocus
-            @blur="checkRusPasportDate"
-          />
-          <p v-if="isShowRusPasportDateError" class="input-error">
-            Дата должна быть ранее сегодняшней
-          </p>
-        </div>
+        <BaseInput
+          id="rusPasportSeries"
+          label="Серия паспорта"
+          error="Введите 4 цифры"
+          placeholder="Введите серию паспорта"
+          :isShowError="isShowRusPasportSeriesError"
+          v-on:update="formData.rusPasportSeries = $event"
+          v-on:blurHandler="checkRusPasportSeries"
+        />
+        <BaseInput
+          id="rusPasportNumber"
+          label="Номер паспорта"
+          error="Введите 6 цифры"
+          placeholder="Введите номер паспорта"
+          :isShowError="isShowRusPasportNumberError"
+          v-on:update="formData.rusPasportNumber = $event"
+          v-on:blurHandler="checkRusPasportNumber"
+        />
+        <BaseInput
+          id="rusPasportDate"
+          label="Дата выдачи паспорта"
+          error="Дата должна быть ранее сегодняшней"
+          type="date"
+          placeholder="Введите дату выдачи"
+          :isShowError="isShowRusPasportDateError"
+          v-on:update="formData.rusPasportDate = $event"
+          v-on:blurHandler="checkRusPasportDate"
+        />
       </div>
     </div>
     <div v-else-if="formData.nationality !== ''">
       <div>
         <h2>Данные о чужеземце</h2>
         <div class="section-foreigner-data">
-          <div>
-            <label for="foreignLastname" class="form-label">
-              Фамилия на латинице
-            </label>
-            <input
-              id="foreignLastname"
-              class="form-input"
-              type="text"
-              v-model="formData.foreignLastname"
-              placeholder="Введите фамилию на латинице"
-              autofocus
-              @blur="checkForeignLastname"
-            />
-            <p v-if="isShowForeignLastnameError" class="input-error">
-              Заполните поле латиницей
-            </p>
-          </div>
-          <div>
-            <label for="foreignFirstname" class="form-label">
-              Имя на латинице
-            </label>
-            <input
-              id="foreignFirstname"
-              class="form-input"
-              type="text"
-              v-model="formData.foreignFirstname"
-              placeholder="Введите имя на латинице"
-              autofocus
-              @blur="checkForeignFirstname"
-            />
-            <p v-if="isShowForeignFirstnameError" class="input-error">
-              Заполните поле латиницей
-            </p>
-          </div>
-          <div>
-            <label for="foreignPasportNumber" class="form-label">
-              Номер паспорта
-            </label>
-            <input
-              id="foreignPasportNumber"
-              class="form-input"
-              type="text"
-              v-model="formData.foreignPasportNumber"
-              placeholder="Введите номер паспорта"
-              autofocus
-            />
-          </div>
+          <BaseInput
+            id="foreignLastname"
+            label="Фамилия на латинице"
+            error="Заполните поле латиницей"
+            placeholder="Введите фамилию на латинице"
+            :isShowError="isShowForeignLastnameError"
+            v-on:update="formData.foreignLastname = $event"
+            v-on:blurHandler="checkForeignLastname"
+          />
+          <BaseInput
+            id="foreignFirstname"
+            label="Имя на латинице"
+            error="Заполните поле латиницей"
+            placeholder="Введите имя на латинице"
+            :isShowError="isShowForeignFirstnameError"
+            v-on:update="formData.foreignFirstname = $event"
+            v-on:blurHandler="checkForeignFirstname"
+          />
+          <BaseInput
+            id="foreignPasportNumber"
+            label="Номер паспорта"
+            placeholder="Введите номер паспорта"
+            v-on:update="formData.foreignPasportNumber = $event"
+          />
           <div class="country-selector" v-click-outside="hideDropdownForeign">
             <label for="foreignPasportCountry"> Страна выдачи </label>
             <input
@@ -364,6 +276,7 @@ import pasports from "../assets/data/passport-types.json";
 import ClickOutside from "vue-click-outside";
 import { debounce } from "../helpers/debounce";
 import { regexCyrillic, regexEmail, regexLatin } from "../helpers/regex";
+import BaseInput from "./BaseInput/BaseInput.vue";
 
 const PASPORT_NUMBER = 6;
 const PASPORT_SERIES = 4;
@@ -371,6 +284,9 @@ const PASPORT_SERIES = 4;
 export default {
   directives: {
     ClickOutside,
+  },
+  components: {
+    BaseInput,
   },
   created() {
     this.debouncedSearchCountry = debounce(this.getCountry, 2000);
@@ -384,7 +300,7 @@ export default {
         patronymic: "",
         birthday: "",
         email: "",
-        isMan: "true",
+        isMan: true,
         nationality: "",
         rusPasportSeries: null,
         rusPasportNumber: null,
@@ -459,21 +375,6 @@ export default {
       isShowForeignPasportCountryError: false,
     };
   },
-  computed: {
-    getToday: function () {
-      const today = new Date();
-      let dd = today.getDate();
-      let mm = today.getMonth() + 1;
-      const yyyy = today.getFullYear();
-      if (dd < 10) {
-        dd = "0" + dd;
-      }
-      if (mm < 10) {
-        mm = "0" + mm;
-      }
-      return yyyy + "-" + mm + "-" + dd;
-    },
-  },
   watch: {
     searchCountry(newValue) {
       this.debouncedSearchCountry(newValue);
@@ -530,6 +431,7 @@ export default {
       );
     },
     checkLastname() {
+      console.log(this.formData.lastname);
       if (
         this.formData.lastname.length > 0 &&
         this.formData.lastname.match(regexCyrillic)
@@ -567,7 +469,7 @@ export default {
     },
     checkOldLastname() {
       if (
-        this.formData.oldLastname.length > 0 &&
+        this.formData.oldLastname?.length > 0 &&
         this.formData.oldLastname.match(regexCyrillic)
       ) {
         this.isOldLastnameChecked = true;
@@ -579,7 +481,7 @@ export default {
     },
     checkOldFirstname() {
       if (
-        this.formData.oldFirstname.length > 0 &&
+        this.formData.oldFirstname?.length > 0 &&
         this.formData.oldFirstname.match(regexCyrillic)
       ) {
         this.isOldFirstnameChecked = true;
@@ -591,7 +493,7 @@ export default {
     },
     checkForeignFirstname() {
       if (
-        this.formData.foreignFirstname.length > 0 &&
+        this.formData.foreignFirstname?.length > 0 &&
         this.formData.foreignFirstname.match(regexLatin)
       ) {
         this.isForeignFirstnameChecked = true;
@@ -603,7 +505,7 @@ export default {
     },
     checkForeignLastname() {
       if (
-        this.formData.foreignLastname.length > 0 &&
+        this.formData.foreignLastname?.length > 0 &&
         this.formData.foreignLastname.match(regexLatin)
       ) {
         this.isForeignLastnameChecked = true;
@@ -695,6 +597,11 @@ export default {
   background: transparent;
   border-bottom: 1px solid grey;
 }
+.form-label {
+  padding: 0;
+  margin: 0 0 20px;
+  font-size: 18px;
+}
 .section-pasport-data {
   display: flex;
   justify-content: space-between;
@@ -746,13 +653,5 @@ export default {
   cursor: pointer;
   list-style: none;
   margin-bottom: 5px;
-}
-.form-label {
-  padding: 0;
-  margin: 0 0 20px;
-  font-size: 18px;
-}
-.input-error {
-  color: red;
 }
 </style>
